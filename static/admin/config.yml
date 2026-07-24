@@ -1,0 +1,31 @@
+# Decap CMS 配置
+# 下面两处带 YOUR_ 的占位符，需要你按「接好 GitHub / Cloudflare」手册替换成真实值
+
+backend:
+  name: github
+  # 改成你的 GitHub 仓库，格式：用户名/仓库名
+  repo: godlones/hesuosi
+  branch: main
+  # 你的域名（Decap 用它在 /admin/ 完成 GitHub 登录回调）
+  site_domain: whyhe.top
+  # 改成你在 GitHub 注册的 OAuth App 的 Client ID（不是 Secret）
+  application_id: YOUR_GITHUB_OAUTH_CLIENT_ID
+
+# 图片等媒体文件存放位置（Decap 上传后写入仓库，前台用 /media 引用）
+media_folder: "content/media"
+public_folder: "/media"
+
+# 去掉下面这行可改为「保存即直接发布」；保留则是草稿→审核流程
+publish_mode: editorial_workflow
+
+collections:
+  - name: "posts"
+    label: "文章"
+    folder: "content/posts"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { name: title, label: "标题", widget: string }
+      - { name: date, label: "日期", widget: datetime, format: "YYYY-MM-DD", required: false }
+      - { name: category, label: "分类", widget: string, required: false }
+      - { name: body, label: "正文", widget: markdown }
