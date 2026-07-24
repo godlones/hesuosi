@@ -6,6 +6,8 @@ backend:
   branch: main
   # 你的域名（Decap 用它在 /admin/ 完成 GitHub 登录回调）
   site_domain: whyhe.top
+  # OAuth 代理地址（我们部署在 Cloudflare Pages Functions 上）
+  base_url: https://whyhe.top
   # GitHub OAuth App 的 Client ID（已填入）
   application_id: Ov23li1lyopAAG2Xgy7Y
 

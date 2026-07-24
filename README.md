@@ -35,24 +35,19 @@ python -m http.server 8000 --directory dist
    - 不要提交 `node_modules/`、`dist/`（已被 .gitignore）。
 
 **② 注册 GitHub OAuth App（Decap 登录用）**
-1. GitHub → Settings → Developer settings → OAuth Apps → New OAuth App。
-2. Application name：随便（如 `hesuosi-cms`）。
-3. Homepage URL：`https://whyhe.top`
-4. Authorization callback URL：`https://whyhe.top/admin/`
-5. 创建后复制 **Client ID**（不是 Client secret）。
+1. GitHub → Settings → Developer settings → OAuth Apps → 你已有的 `hesuosi-cms` → **Update application**。
+2. 检查并修改：
+   - Homepage URL：`https://whyhe.top`
+   - **Authorization callback URL**：必须是 `https://whyhe.top/callback`（不是 `/admin/`）
+3. 保存后复制 **Client ID**（已经给过助手）。
+4. 点击 **Generate a new client secret**，复制这个 **Client secret**（下一步要填到 Cloudflare，不要发在聊天里）。
+
+> 如果你还没创建 OAuth App：New OAuth App → Homepage URL `https://whyhe.top` → Authorization callback URL `https://whyhe.top/callback` → Register。
 
 **③ 填配置（OAuth App 的 Client ID）**
 - `repo` 已填好：`godlones/hesuosi`（无需改）。
-- `application_id` 仍需填：在 GitHub 注册一个 OAuth App（见下「创建 OAuth App」），
-  复制其 **Client ID**，贴给助手，由助手填入 `config.yml` 并提交；
-  或你自己改 `static/admin/config.yml` 后 `git push`。
-
-**创建 OAuth App（必须在 GitHub 网页做，API 无法代建）**
-1. GitHub 右上角头像 → Settings → Developer settings → **OAuth Apps** → **New OAuth App**。
-2. Application name：随便，如 `hesuosi-cms`。
-3. Homepage URL：`https://whyhe.top`
-4. Authorization callback URL：`https://whyhe.top/admin/`（注意末尾斜杠）
-5. Register 后页面里的 **Client ID** 复制出来给我（不要给 Client secret）。
+- `application_id` 已填入你给的 Client ID，已推送。
+- OAuth 代理代码已放在 `functions/auth.js` 和 `functions/callback.js`，会随 Pages 一起部署。
 
 **④ 把 Cloudflare Pages 接到 Git（需在你的 Cloudflare 账号点授权）**
 
@@ -66,7 +61,13 @@ python -m http.server 8000 --directory dist
    - Build output directory：`dist`
 4. 点 **Save and Deploy**，等首次构建完成（约 1 分钟）。
 5. 进入该项目的 **Custom domains** → 添加 `whyhe.top` → 按提示确认（CNAME 已存在会自动复用，开橙云即可），几分钟后 `https://whyhe.top` 显示博客。
-6. 之后每次在 `/admin` 发布文章 → 提交 GitHub → Pages 自动重建。
+6. **设置环境变量**（OAuth 代理需要用 Client Secret 去 GitHub 换 token）：
+   - 进入 Pages 项目 → **Settings** → **Variables and Secrets** → **+ Add**
+   - 类型选 **Secret**
+   - Name：`GITHUB_CLIENT_SECRET`
+   - Value：你刚才从 GitHub OAuth App 复制的 **Client secret**
+   - 保存后会触发重新部署。
+7. 之后每次在 `/admin` 发布文章 → 提交 GitHub → Pages 自动重建。
 
 ## 写文章 / 发布
 
