@@ -1,15 +1,13 @@
 # Decap CMS 配置
-# 下面两处带 YOUR_ 的占位符，需要你按「接好 GitHub / Cloudflare」手册替换成真实值
 
 backend:
   name: github
-  # 改成你的 GitHub 仓库，格式：用户名/仓库名
   repo: godlones/hesuosi
   branch: main
   # 你的域名（Decap 用它在 /admin/ 完成 GitHub 登录回调）
   site_domain: whyhe.top
-  # 改成你在 GitHub 注册的 OAuth App 的 Client ID（不是 Secret）
-  application_id: YOUR_GITHUB_OAUTH_CLIENT_ID
+  # GitHub OAuth App 的 Client ID（已填入）
+  application_id: Ov23li1lyopAAG2Xgy7Y
 
 # 图片等媒体文件存放位置（Decap 上传后写入仓库，前台用 /media 引用）
 media_folder: "content/media"

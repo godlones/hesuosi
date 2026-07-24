@@ -41,11 +41,25 @@ python -m http.server 8000 --directory dist
 4. Authorization callback URL：`https://whyhe.top/admin/`
 5. 创建后复制 **Client ID**（不是 Client secret）。
 
-**③ 填配置**
-1. 打开 `static/admin/config.yml`，把：
-   - `repo: YOUR_GITHUB_USERNAME/hesuosi` → 改成你的 `用户名/仓库名`
-   - `application_id: YOUR_GITHUB_OAUTH_CLIENT_ID` → 改成刚复制的 Client ID
-2. 提交并推送到 GitHub。
+**③ 填配置（OAuth App 的 Client ID）**
+- `repo` 已填好：`godlones/hesuosi`（无需改）。
+- `application_id` 仍需填：在 GitHub 注册一个 OAuth App（见下「创建 OAuth App」），
+  复制其 **Client ID**，贴给助手，由助手填入 `config.yml` 并提交；
+  或你自己改 `static/admin/config.yml` 后 `git push`。
+
+**创建 OAuth App（必须在 GitHub 网页做，API 无法代建）**
+1. GitHub 右上角头像 → Settings → Developer settings → **OAuth Apps** → **New OAuth App**。
+2. Application name：随便，如 `hesuosi-cms`。
+3. Homepage URL：`https://whyhe.top`
+4. Authorization callback URL：`https://whyhe.top/admin/`（注意末尾斜杠）
+5. Register 后页面里的 **Client ID** 复制出来给我（不要给 Client secret）。
+
+**④ 把 Cloudflare Pages 接到 Git（需在你的 Cloudflare 账号点授权）**
+1. Cloudflare 控制台 → Pages → 删除旧的 `hesuosi` 直接上传项目（或直接新建，避免重名）。
+2. 新建 Pages 项目 → 连接 Git 仓库 → 选 `godlones/hesuosi`。
+3. 构建命令：`npm run build`；输出目录：`dist`；Framework preset：None。
+4. 首次构建完成后，`https://whyhe.top`（或自定义域）即显示博客。
+5. 之后每次在 `/admin` 发布文章 → 提交 GitHub → Pages 自动重建。
 
 **④ 把 Cloudflare Pages 接到 Git**
 1. Cloudflare 控制台 → Pages → 删除旧的 `hesuosi` 直接上传项目（或直接新建）。
