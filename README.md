@@ -55,18 +55,18 @@ python -m http.server 8000 --directory dist
 5. Register 后页面里的 **Client ID** 复制出来给我（不要给 Client secret）。
 
 **④ 把 Cloudflare Pages 接到 Git（需在你的 Cloudflare 账号点授权）**
-1. Cloudflare 控制台 → Pages → 删除旧的 `hesuosi` 直接上传项目（或直接新建，避免重名）。
-2. 新建 Pages 项目 → 连接 Git 仓库 → 选 `godlones/hesuosi`。
-3. 构建命令：`npm run build`；输出目录：`dist`；Framework preset：None。
-4. 首次构建完成后，`https://whyhe.top`（或自定义域）即显示博客。
-5. 之后每次在 `/admin` 发布文章 → 提交 GitHub → Pages 自动重建。
 
-**④ 把 Cloudflare Pages 接到 Git**
-1. Cloudflare 控制台 → Pages → 删除旧的 `hesuosi` 直接上传项目（或直接新建）。
-2. 新建 Pages 项目 → 连接 Git 仓库 → 选 `hesuosi` 仓库。
-3. 构建命令：`npm run build`；输出目录：`dist`；Framework preset：None。
-4. 等首次构建完成，访问 `https://whyhe.top`（或你的自定义域）应能看到博客。
-   - 若还没绑自定义域：在 Pages 设置里添加 `whyhe.top`（之前已绑过，状态 active 可复用）。
+⚠️ 重要：你现在的 `hesuosi` Pages 项目是 **wrangler 直传** 创建的，Cloudflare 不允许把直传项目切换成 Git 模式。所以必须**新建**一个 Git 驱动的项目，不能复用旧的 `hesuosi`。
+
+1. Cloudflare 控制台 → Pages → 找到旧的 `hesuosi`（直传项目）→ **Delete** 删除它（自定义域 `whyhe.top` 会随项目一起解绑，没关系，下一步会重新绑）。
+2. 点 **Create a project** → 选 **Connect to Git** → 授权 Cloudflare 读取你的 GitHub → 选仓库 **`godlones/hesuosi`**。
+3. 构建设置：
+   - Framework preset：**None**
+   - Build command：`npm run build`
+   - Build output directory：`dist`
+4. 点 **Save and Deploy**，等首次构建完成（约 1 分钟）。
+5. 进入该项目的 **Custom domains** → 添加 `whyhe.top` → 按提示确认（CNAME 已存在会自动复用，开橙云即可），几分钟后 `https://whyhe.top` 显示博客。
+6. 之后每次在 `/admin` 发布文章 → 提交 GitHub → Pages 自动重建。
 
 ## 写文章 / 发布
 
