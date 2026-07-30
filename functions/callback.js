@@ -14,10 +14,8 @@ export async function onRequest(context) {
   const clientSecret = env.GITHUB_CLIENT_SECRET;
 
   if (!clientSecret) {
-    const keys = Object.keys(env || {});
     return new Response(
-      'OAuth not fully configured: missing GITHUB_CLIENT_SECRET.\n' +
-        'Available env keys (' + keys.length + '): ' + (keys.length ? keys.join(', ') : '(none)'),
+      'OAuth not fully configured: missing GITHUB_CLIENT_SECRET environment variable.',
       { status: 500 }
     );
   }
