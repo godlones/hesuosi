@@ -9,5 +9,129 @@
 <body>
   <!-- Decap CMS 会从同目录的 config.yml 读取配置 -->
   <script src="https://unpkg.com/decap-cms@^3.3.3/dist/decap-cms.js"></script>
+  <script>
+  /* 粘贴增强：把从 Excel / Word / 网页 粘进来的表格自动转成 Markdown 表格。
+     普通文本粘贴不受影响。Decap 编辑器底层是 CodeMirror，实例挂在 .CodeMirror 节点上。 */
+  (function () {
+    function escapeCell(s) {
+      return String(s == null ? '' : s)
+        .replace(/\r?\n/g, ' ')
+        .replace(/\|/g, '\\|')
+        .trim();
+    }
+    function toTable(rows) {
+      if (!rows || !rows.length) return null;
+      return rows
+        .map(function (cells, i) {
+          var line = '| ' + cells.map(escapeCell).join(' | ') + ' |';
+          if (i === 0) {
+            return (
+              line +
+              '\n' +
+              '| ' +
+              cells.map(function () { return '---'; }).join(' | ') +
+              ' |'
+            );
+          }
+          return line;
+        })
+        .join('\n');
+    }
+    function fromHTML(html) {
+      try {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var trs = doc.querySelectorAll('table tr');
+        if (!trs.length) return null;
+        var rows = [];
+        trs.forEach(function (tr) {
+          var cells = [];
+          tr.querySelectorAll('th, td').forEach(function (c) {
+            cells.push(c.textContent);
+          });
+          if (cells.length) rows.push(cells);
+        });
+        return toTable(rows);
+      } catch (e) {
+        return null;
+      }
+    }
+    function parseRows(text) {
+      var lines = text
+        .replace(/\r/g, '')
+        .split('\n')
+        .map(function (l) { return l.trim(); })
+        .filter(function (l) { return l !== ''; });
+      if (!lines.length) return null;
+      var delim =
+        lines[0].indexOf('\t') !== -1
+          ? '\t'
+          : lines[0].indexOf('|') !== -1
+          ? '|'
+          : null;
+      if (!delim) return null;
+      var rows = lines
+        .map(function (l) {
+          var parts = l.split(delim).map(function (x) { return x.trim(); });
+          if (parts.length && parts[0] === '') parts.shift();
+          if (parts.length && parts[parts.length - 1] === '') parts.pop();
+          return parts;
+        })
+        .filter(function (r) { return r.length > 1; });
+      return rows.length ? rows : null;
+    }
+    function fromTSV(text) {
+      return toTable(parseRows(text));
+    }
+    function isTableText(text) {
+      if (text.indexOf('\t') !== -1) return true;
+      var lines = text.split('\n').filter(function (l) { return l.trim() !== ''; });
+      return (
+        lines.length >= 2 &&
+        lines.every(function (l) { return (l.match(/\|/g) || []).length >= 1; })
+      );
+    }
+    function handlePaste(e) {
+      if (!e.clipboardData) return;
+      var html = e.clipboardData.getData('text/html') || '';
+      var text = e.clipboardData.getData('text/plain') || '';
+      var md = null;
+      if (/<table/i.test(html)) md = fromHTML(html);
+      if (!md && text && isTableText(text)) md = fromTSV(text);
+      if (!md) return; // 不是表格，走默认粘贴
+      e.preventDefault();
+      var cmEl = e.target && e.target.closest ? e.target.closest('.CodeMirror') : null;
+      var cm = cmEl && cmEl.CodeMirror;
+      var inserted = md + '\n\n';
+      if (cm) {
+        cm.replaceSelection(inserted);
+        cm.focus();
+      } else if (document.activeElement && document.activeElement.isContentEditable) {
+        document.execCommand('insertText', false, inserted);
+      }
+    }
+    var attached = new WeakSet();
+    function attach(cmEl) {
+      if (!cmEl || attached.has(cmEl)) return;
+      attached.add(cmEl);
+      cmEl.addEventListener('paste', handlePaste, true);
+    }
+    function observe() {
+      document.querySelectorAll('.CodeMirror').forEach(attach);
+      var obs = new MutationObserver(function (muts) {
+        muts.forEach(function (m) {
+          m.addedNodes.forEach(function (n) {
+            if (n.nodeType === 1) {
+              if (n.classList && n.classList.contains('CodeMirror')) attach(n);
+              else if (n.querySelectorAll) n.querySelectorAll('.CodeMirror').forEach(attach);
+            }
+          });
+        });
+      });
+      obs.observe(document.body, { childList: true, subtree: true });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observe);
+    else observe();
+  })();
+  </script>
 </body>
 </html>
