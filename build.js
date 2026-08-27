@@ -33,6 +33,12 @@ function excerpt(html, n = 80) {
 }
 function fmtDate(d) {
   if (!d) return '';
+  if (d instanceof Date) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
   return String(d).slice(0, 10);
 }
 
@@ -81,9 +87,13 @@ let indexTpl = fs.readFileSync(path.join(TEMPLATES, 'index.html'), 'utf8');
 const cards = posts
   .map(
     (p) => `      <article class="post">
-        <div class="post-meta">${p.date} · ${p.category}</div>
-        <h3><a href="posts/${p.slug}.html">${p.title}</a></h3>
-        <p>${p.excerpt}</p>
+        <div class="post-top">
+          <span class="tag">${p.category}</span>
+          <span class="post-date">${p.date}</span>
+        </div>
+        <h3 class="post-title"><a href="posts/${p.slug}.html">${p.title}</a></h3>
+        <p class="post-excerpt">${p.excerpt}</p>
+        <span class="read-more">阅读全文 →</span>
       </article>`
   )
   .join('\n');
