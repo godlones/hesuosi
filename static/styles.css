@@ -426,6 +426,87 @@ main { display: block; }
 }
 .post-foot .muted { font-size: 14px; }
 
+/* ===== 纵向时间轴 ===== */
+.timeline {
+  position: relative;
+  padding-left: 30px;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--line);
+}
+.tl-year {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--accent);
+  margin: 22px 0 12px;
+}
+.tl-year:first-child { margin-top: 0; }
+.tl-item {
+  position: relative;
+  display: block;
+  margin-bottom: 16px;
+  color: inherit;
+  text-decoration: none;
+}
+.tl-dot {
+  position: absolute;
+  left: -24px;
+  top: 7px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+  z-index: 1;
+}
+.tl-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.tl-item:hover .tl-card {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  transform: translateX(4px);
+  box-shadow: var(--shadow);
+}
+.tl-item.active .tl-dot {
+  background: var(--accent);
+  transform: scale(1.25);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.tl-item.active .tl-card {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+.tl-date {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.tl-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.tl-item:hover .tl-title { color: var(--accent); }
+.tl-excerpt {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 /* ===== 响应式 ===== */
 @media (max-width: 720px) {
   .posts { grid-template-columns: 1fr; }
@@ -433,4 +514,6 @@ main { display: block; }
   .hero-title { letter-spacing: 5px; }
   .section { padding: 48px 20px; }
   .card { padding: 26px; }
+  .timeline { padding-left: 24px; }
+  .tl-dot { left: -19px; }
 }
