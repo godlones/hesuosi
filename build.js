@@ -98,6 +98,31 @@ const cards = posts
   )
   .join('\n');
 indexTpl = indexTpl.replace('<!--POSTS-->', cards);
+
+// 4b. 生成纵向时间轴（按年分组，倒序：最新在前）
+const timeline = (() => {
+  let curYear = '';
+  let html = '';
+  for (const p of posts) {
+    const year = (p.date || '').slice(0, 4);
+    if (year && year !== curYear) {
+      curYear = year;
+      html += `      <div class="tl-year">${year}</div>\n`;
+    }
+    html += `      <a class="tl-item" href="posts/${p.slug}.html">
+        <span class="tl-dot"></span>
+        <div class="tl-card">
+          <div class="tl-date">${p.date}</div>
+          <div class="tl-title">${p.title}</div>
+          <div class="tl-excerpt">${p.excerpt}</div>
+          <span class="tag">${p.category}</span>
+        </div>
+      </a>\n`;
+  }
+  return html;
+})();
+indexTpl = indexTpl.replace('<!--TIMELINE-->', timeline);
+
 fs.writeFileSync(path.join(DIST, 'index.html'), indexTpl);
 
 // 5. 复制静态资源（含 /admin 后台）
