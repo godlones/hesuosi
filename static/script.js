@@ -20,3 +20,34 @@
     update();
   }
 })();
+
+// 时间轴滚动联动：随着页面滚动，高亮当前所在的日期节点
+(function () {
+  var items = Array.prototype.slice.call(document.querySelectorAll('.tl-item'));
+  if (!items.length) return;
+  function spy() {
+    var threshold = window.innerHeight * 0.35;
+    var current = null;
+    for (var i = 0; i < items.length; i++) {
+      var r = items[i].getBoundingClientRect();
+      if (r.top <= threshold) current = items[i];
+    }
+    var visible = items.filter(function (it) {
+      var b = it.getBoundingClientRect();
+      return b.top <= threshold + 1 && b.bottom >= 0;
+    });
+    if (visible.length) current = visible[visible.length - 1];
+    if (!current) current = items[0];
+    items.forEach(function (it) { it.classList.remove('active'); });
+    current.classList.add('active');
+  }
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(spy);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  spy();
+})();
